@@ -16,18 +16,18 @@ def fun(x: np.float) -> np.float:
     """
     Put your function here
     """
-    return 1-1-np.power(np.power(((x-6)/5), 4), 0.25)
+    return -(1-1-np.power(np.power(((x-6)/5), 4), 0.25))
 
 
 def svenn(x0, delta):
     print("Starting Svenn algorithm...")
     x1 = x0
     x2 = x1+delta
-    if fun(x1) > fun(x2):
+    if fun(x1) < fun(x2):
         delta = -delta
         x1 = x0
         x2 = x1+delta
-    while fun(x2) > fun(x1):
+    while fun(x2) < fun(x1):
         delta *= 2
         x1 = x2
         x2 = x1+delta
