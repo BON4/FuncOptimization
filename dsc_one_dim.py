@@ -19,7 +19,7 @@ def fun(x: np.float) -> np.float:
     return -(1-1-np.power(np.power(((x-6)/5), 4), 0.25))
 
 
-def svenn(x0, delta):
+def svenn(x0: np.float, delta: np.float) -> list:
     print("Starting Svenn algorithm...")
     x1 = x0
     x2 = x1+delta
@@ -49,7 +49,7 @@ def svenn(x0, delta):
     return [a, b]
 
 
-def dsc(x0, delta, epsx, counter=0):
+def dsc(x0: np.float, delta: np.float, epsx: np.float, counter=0):
     global array
     global answer_table
     counter += 1

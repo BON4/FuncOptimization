@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import math
 import scipy.optimize as sopt
 import scipy.optimize as opt
+import pandas as pd
+from tabulate import tabulate
+
+
+answer_table = pd.DataFrame(
+    columns=['x', 'y', 'f'])
 
 
 def fun(x):
@@ -27,11 +33,11 @@ def hesfun(x):
     return np.array(H)
 
 
-def line_search(s, f, H):
+def line_search(s: np.ndarray, f: np.ndarray, H: np.ndarray) -> np.ndarray:
     return np.dot(-s.T, f)/np.dot(np.dot(s.T, H), s)
 
 
-def polack_ribier_ethod(poits: list, max_iters: int, s: np.ndarray = np.nan, alpha_opt: np.float = np.nan,
+def polack_ribier_ethod(poits: list, epsx: np.float, s: np.ndarray = np.nan, alpha_opt: np.float = np.nan,
                         counter=1) -> np.ndarray:
     def f1d(alpha):
         return fun(x + alpha*s)
@@ -53,12 +59,12 @@ def polack_ribier_ethod(poits: list, max_iters: int, s: np.ndarray = np.nan, alp
         next_guess = x + alpha_opt * s
         poits.append(next_guess)
 
-    if(counter > max_iters):
+    if(abs(next_guess - poits[-2])[0] < epsx and abs(next_guess - poits[-2])[1] < epsx):
         return poits
-    return polack_ribier_ethod(poits, max_iters, s, alpha_opt, counter+1)
+    return polack_ribier_ethod(poits, epsx, s, alpha_opt, counter+1)
 
 
-def steepest_descent(poits: list, max_iters: int, s: np.ndarray = np.nan, alpha_opt: np.float = np.nan,
+def steepest_descent(poits: list, epsx: np.float, s: np.ndarray = np.nan, alpha_opt: np.float = np.nan,
                      counter=1) -> np.ndarray:
     def f1d(alpha):
         return fun(x + alpha*s)
@@ -68,9 +74,9 @@ def steepest_descent(poits: list, max_iters: int, s: np.ndarray = np.nan, alpha_
     next_guess = x + alpha_opt * s
     poits.append(next_guess)
 
-    if(counter > max_iters):
+    if(abs(next_guess - poits[-2])[0] < epsx and abs(next_guess - poits[-2])[1] < epsx):
         return poits
-    return steepest_descent(poits, max_iters, s, alpha_opt, counter+1)
+    return steepest_descent(poits, epsx, s, alpha_opt, counter+1)
 
 
 def plotting():
@@ -79,7 +85,7 @@ def plotting():
 
     fig = plt.figure()
 
-    xs = polack_ribier_ethod(list([[1, 1], ]), 20)
+    xs = polack_ribier_ethod(list([[1, 1], ]), 0.001)
 
     ax = fig.add_subplot(1, 2, 1, projection='3d')
 
@@ -92,17 +98,18 @@ def plotting():
 
     ax1.contour(X, Y, Z, levels=40)
 
-    # for point in np.array(xs):
-    #     ax.scatter(point[0], point[1], fun(point), color='red')
-
-    #ax.scatter(np.array(xs).T[0], np.array(xs).T[1], np.array([map(fun, np.array(xs).T[0], np.array(xs).T[1])]) , c='r')
-
     ax.plot(np.array(xs).T[0], np.array(xs).T[1], np.array(
         list(map(fun, np.array(xs)))).T, "x-", color='red')
 
     ax1.plot(np.array(xs).T[0], np.array(xs).T[1], "x-")
 
-    print(f"x = {xs[-1][0]}, y = {xs[-1][1]}, z = {fun(xs[-1])}")
+    global answer_table
+
+    for point in xs:
+        answer_table = answer_table.append(
+            {"x": point[0], "y": point[1], "f": fun(point)}, ignore_index=True)
+
+    print(tabulate(answer_table.head(10), headers='keys', tablefmt='psql'))
 
     plt.show()
 
