@@ -1,5 +1,5 @@
 One dimensional methods:
-    DSK (Davis-Svenn-Campy method)
+    DSC (Davis-Svenn-Campy method)
 
 Multidimensional:
     Steepest desent
@@ -7,3 +7,13 @@ Multidimensional:
 
 Multidimensional with constraints:
     Modified lagrange method
+
+Одномерные методы:
+    ДСК (метод Дэвиса-Свенна-Кэмпи)
+
+Многомерная:
+    Наискорейшего спуска
+    Метод Поллака-Рибьера
+
+Многомерный с ограничениями:
+    Модифицированный метод Лагранжа
