@@ -60,11 +60,11 @@ def modified_lagrange_method(fun, points, epsx, g_constarins, h_constrains, u=[0
             array_of_constrains_h = np.array(
                 [h_constrain(x) for h_constrain in h_constrains])
             return fun(x) - sum([u_i * g for u_i, g in zip(u, array_of_constrains_g)]) + 0.5*sum(c * array_of_constrains_g**2) - sum([a_i * g for a_i, g in zip(a, array_of_constrains_h)]) + 0.5*sum(c * array_of_constrains_h**2)
-        elif(len(g_constarins) != 0 and len(g_constarins) == 0):
+        elif(len(h_constarins) != 0 and len(g_constarins) == 0):
             array_of_constrains_h = np.array(
                 [h_constrain(x) for h_constrain in h_constrains])
             return fun(x) - sum([a_i * h for a_i, h in zip(a, array_of_constrains_h)]) + 0.5*sum(c * array_of_constrains_h**2)
-        elif(len(g_constarins) == 0 and len(g_constarins) != 0):
+        elif(len(h_constarins) == 0 and len(g_constarins) != 0):
             array_of_constrains_g = np.array(
                 [gplusfun(g_constrain, x, u_i, c) for g_constrain, u_i in zip(g_constarins, u)])
             return fun(x) - sum([u_i * g for u_i, g in zip(u, array_of_constrains_g)]) + 0.5*sum(c * array_of_constrains_g**2)
