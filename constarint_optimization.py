@@ -27,7 +27,7 @@ def gplusfun(g, x, u, c):
     return min(g(x), np.divide(u, c))
 
 
-def modified_lagrange_method(fun, points, epsx, g_constarins, h_constrains, u=[0], a=[0], c=0.1, beta=8, counter=0,func_counter = 0, _callback=None):
+def modified_lagrange_method(fun, points, epsx, g_constarins, h_constrains, u=[0], a=[0], c=0.1, beta=2, counter=0, func_counter = 0, _callback=None):
     """Minimize a function with given constrains
     Arguments:
         points {[float]} -- [array of calculated points]
@@ -35,8 +35,8 @@ def modified_lagrange_method(fun, points, epsx, g_constarins, h_constrains, u=[0
         g_constarins {[Callable]} -- [array of inequality constrains]
         h_constrains {[Callable]} -- [array of equality constrains]
     Keyword Arguments:
-        u {list} -- [Langrange factor for inequality] (default: {[0]})
-        a {list} -- [Langrange factor for equality] (default: {[0]})
+        u {list} -- [Langrange factor for inequality, must be same length as g_constarins] (default: {[0]})
+        a {list} -- [Langrange factor for equality, must be same length as h_constrains] (default: {[0]})
         c {float} -- [penalty factor] (default: {0.1})
         beta {int} -- [growth rate of penalty factor must be in range [2;26]] (default: {2})
         counter {int} -- [counter] (default: {0})
@@ -49,11 +49,11 @@ def modified_lagrange_method(fun, points, epsx, g_constarins, h_constrains, u=[0
             array_of_constrains_h = np.array(
                 [h_constrain(x) for h_constrain in h_constrains])
             return fun(x) - sum([u_i * g for u_i, g in zip(u, array_of_constrains_g)]) + 0.5*sum(c * array_of_constrains_g**2) - sum([a_i * g for a_i, g in zip(a, array_of_constrains_h)]) + 0.5*sum(c * array_of_constrains_h**2)
-        elif(len(h_constarins) != 0 and len(g_constarins) == 0):
+        elif(len(h_constrains) != 0 and len(g_constarins) == 0):
             array_of_constrains_h = np.array(
                 [h_constrain(x) for h_constrain in h_constrains])
             return fun(x) - sum([a_i * h for a_i, h in zip(a, array_of_constrains_h)]) + 0.5*sum(c * array_of_constrains_h**2)
-        elif(len(h_constarins) == 0 and len(g_constarins) != 0):
+        elif(len(h_constrains) == 0 and len(g_constarins) != 0):
             array_of_constrains_g = np.array(
                 [gplusfun(g_constrain, x, u_i, c) for g_constrain, u_i in zip(g_constarins, u)])
             return fun(x) - sum([u_i * g for u_i, g in zip(u, array_of_constrains_g)]) + 0.5*sum(c * array_of_constrains_g**2)
@@ -63,8 +63,10 @@ def modified_lagrange_method(fun, points, epsx, g_constarins, h_constrains, u=[0
     if _callback is not None:
         _callback({"x": points[-1], "u": u, "a": a, "c": c, "f": fun(points[-1]), "L": lagrange(points[-1]), "iter": counter, "fiter": func_counter})
 
+    # BFGS - is most fast & eficient for my cases
     res = sopt.minimize(
         lagrange, x0=points[-1], method='BFGS')
+
     next_val = res.x
     func_counter = func_counter+res.nfev
     counter = counter+res.nit
